@@ -15,7 +15,7 @@ Desktop.ini
 /.settings
 /.classpath
 /.project
-/.idea
+
 
 # ignore Maven generated target folders
 target
@@ -27,8 +27,8 @@ out
 .settings
 .factorypath
 .metadata
-.idea
-*.iml
+
+
 
 # ignore log files
 *.log
