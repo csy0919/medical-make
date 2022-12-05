@@ -10,35 +10,35 @@ export function listItems(query) {
 }
 
 // 查询岗位详细
-export function getPost(postId) {
+export function getItems(itemsId) {
   return request({
-    url: '/system/post/' + postId,
+    url: '/his/items/' + itemsId,
     method: 'get'
   })
 }
 
-// 新增岗位
-export function addPost(data) {
+// 新增检查项目
+export function addItems(data) {
   return request({
-    url: '/system/post',
+    url: '/his/items',
     method: 'post',
     data: data
   })
 }
 
-// 修改岗位
-export function updatePost(data) {
+// 修改检查项目
+export function updateItems(data) {
   return request({
-    url: '/system/post',
+    url: '/his/items',
     method: 'put',
     data: data
   })
 }
 
 // 删除岗位
-export function delPost(postId) {
+export function delItems(itemsId) {
   return request({
-    url: '/system/post/' + postId,
+    url: '/his/items/' + itemsId,
     method: 'delete'
   })
 }

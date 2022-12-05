@@ -119,14 +119,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:post:edit']"
+            v-hasPermi="['his:items:upd']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:post:remove']"
+            v-hasPermi="['his:items:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -140,19 +140,35 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改岗位对话框 -->
+    <!-- 添加或修改项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="岗位名称" prop="postName">
-          <el-input v-model="form.postName" placeholder="请输入岗位名称" />
+        <el-form-item label="项目类型" prop="itemsType">
+          <el-select v-model="form.itemsType">
+            <el-option
+              v-for="dict in dict.type.items_oper_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="岗位编码" prop="postCode">
-          <el-input v-model="form.postCode" placeholder="请输入编码名称" />
+        <el-form-item label="项目名称" prop="itemsName">
+          <el-input v-model="form.itemsName" placeholder="请输入项目名称" />
         </el-form-item>
-        <el-form-item label="岗位顺序" prop="postSort">
-          <el-input-number v-model="form.postSort" controls-position="right" :min="0" />
+        <el-form-item label="关键字" prop="itemsGJZ">
+          <el-input v-model="form.itemsGJZ" placeholder="请输入项目关键字" />
         </el-form-item>
-        <el-form-item label="岗位状态" prop="status">
+        <el-form-item label="项目价格" prop="itemsPrice">
+          <el-input v-model="form.itemsPrice" placeholder="请输入项目价格"/>
+        </el-form-item>
+        <el-form-item label="项目成本" prop="itemsCost">
+          <el-input v-model="form.itemsCost" placeholder="请输入项目成本"/>
+        </el-form-item>
+        <el-form-item label="项目单位" prop="itemsUnit">
+          <el-input v-model="form.itemsUnit" placeholder="请输入项目单位" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.sys_normal_disable"
@@ -174,7 +190,7 @@
 </template>
 
 <script>
-import { listItems, getPost, delPost, addPost, updatePost } from "@/api/his/items";
+import { listItems, getItems, delItems, addItems, updateItems } from "@/api/his/items";
 
 export default {
   name: "Items",
@@ -212,15 +228,22 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        postName: [
-          { required: true, message: "岗位名称不能为空", trigger: "blur" }
+        itemsPrice:[
+          { required: true, message: "项目价格不能为空", trigger: "blur"}
         ],
-        postCode: [
-          { required: true, message: "岗位编码不能为空", trigger: "blur" }
+        itemsCost:[
+          { required: true, message: "项目成本不能为空", trigger: "blur"}
         ],
-        postSort: [
-          { required: true, message: "岗位顺序不能为空", trigger: "blur" }
-        ]
+        itemsName: [
+          { required: true, message: "项目名称不能为空", trigger: "blur" }
+        ],
+        itemsType: [
+          { required: true, message: "项目类型不能为空", trigger: "blur" }
+        ],
+        itemsGJZ: [
+          { required: true, message: "项目关键字不能为空", trigger: "blur" }
+        ],
+
       }
     };
   },
@@ -245,10 +268,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        postId: undefined,
-        postCode: undefined,
-        postName: undefined,
-        postSort: 0,
+        itemsPrice:undefined,
+        itemsCost:undefined,
+        itemsType: undefined,
+        itemsName: undefined,
+        itemsGJZ: undefined,
         status: "0",
         remark: undefined
       };
@@ -266,7 +290,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.postId)
+      this.ids = selection.map(item => item.itemsId)
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -274,30 +298,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加岗位";
+      this.title = "添加检查项目";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const postId = row.postId || this.ids
-      getPost(postId).then(response => {
+      const itemsId = row.itemsId || this.ids
+      getItems(itemsId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改岗位";
+        this.title = "修改检查项目";
       });
     },
     /** 提交按钮 */
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.postId != undefined) {
-            updatePost(this.form).then(response => {
+          if (this.form.itemsId !== undefined) {
+            updateItems(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addPost(this.form).then(response => {
+            addItems(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -308,20 +332,20 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const postIds = row.postId || this.ids;
-      this.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
-        return delPost(postIds);
+      const itemsIds = row.itemsId || this.ids;
+      this.$modal.confirm('是否确认删除项目费用ID为"' + itemsIds + '"的数据项？').then(function() {
+        return delItems(itemsIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
     /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/post/export', {
-        ...this.queryParams
-      }, `post_${new Date().getTime()}.xlsx`)
-    }
+  //   handleExport() {
+  //     this.download('system/post/export', {
+  //       ...this.queryParams
+  //     }, `post_${new Date().getTime()}.xlsx`)
+  //   }
   }
 };
 </script>

@@ -52,13 +52,13 @@ public interface HisDeptMapper {
      */
     HisDept checkDeptCodeUnique(String deptCode);
 
-    /**
-     * 删除科室信息
-     *
-     * @param deptId 科室ID
-     * @return 结果
-     */
-    int deleteDeptById(Long deptId);
+//    /**
+//     * 删除单个科室信息
+//     *
+//     * @param deptId 科室ID
+//     * @return 结果
+//     */
+//    int deleteDeptById(Long deptId);
 
     /**
      * 批量删除科室信息

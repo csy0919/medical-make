@@ -25,11 +25,11 @@ public class HisItems extends BaseEntity {
 
     /** 项目单价 */
     @Excel(name = "项目单价")
-    private double itemsPrice;
+    private String itemsPrice;
 
     /** 项目成本 */
     @Excel(name = "项目成本")
-    private double itemsCost;
+    private String itemsCost;
 
     /** 单位 */
     @Excel(name = "单位")

@@ -9,4 +9,16 @@ import java.util.List;
  */
 public interface HisItemsService {
     List<HisItems> selectHisItemsList(HisItems hisItems);
+
+    int addItems(HisItems hisItems);
+
+    HisItems selectItems(Long itemsId);
+
+    int updateItems(HisItems hisItems);
+
+    String checkItemsNameUnique(HisItems hisItems);
+
+    String checkItemsGJZUnique(HisItems hisItems);
+
+    int deleteByItemsIds(Long[] itemsIds);
 }
