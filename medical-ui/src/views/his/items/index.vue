@@ -1,13 +1,31 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="科室名称" prop="deptName">
+      <el-form-item label="项目名称" prop="itemsName">
         <el-input
-          v-model="queryParams.deptName"
-          placeholder="请输入科室名称"
+          v-model="queryParams.itemsName"
+          placeholder="请输入项目名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="关键字" prop="itemsGJZ">
+        <el-input
+          v-model="queryParams.itemsGJZ"
+          placeholder="请输入关键字"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="项目类型" prop="itemsType">
+        <el-select v-model="queryParams.itemsType" placeholder="项目类型" clearable>
+          <el-option
+            v-for="dict in dict.type.items_oper_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="可用状态" clearable>
@@ -33,7 +51,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['his:dept:add']"
+          v-hasPermi="['system:post:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -44,7 +62,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['his:dept:upd']"
+          v-hasPermi="['system:post:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -55,30 +73,35 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['his:dept:remove']"
+          v-hasPermi="['system:post:remove']"
         >删除</el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['system:post:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:post:export']"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="deptList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="itemsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="科室ID" align="center" prop="deptId" />
-      <el-table-column label="科室名称" align="center" prop="deptName" />
-      <el-table-column label="科室编码" align="center" prop="deptCode" />
-      <el-table-column label="当前挂号量" align="center" prop="deptQuantity" />
-      <el-table-column label="负责人" align="center" prop="deptLeader" />
-      <el-table-column label="电话" align="center" prop="deptPhone" />
+      <el-table-column label="项目费用ID" align="center" prop="itemsId" />
+      <el-table-column label="项目名称" align="center" prop="itemsName" />
+      <el-table-column label="关键字" align="center" prop="itemsGJZ" />
+      <el-table-column label="项目单价" align="center" prop="itemsPrice" />
+      <el-table-column label="项目成本" align="center" prop="itemsCost" />
+      <el-table-column label="单位" align="center" prop="itemsUnit" />
+      <el-table-column label="类别" align="center" prop="itemsType" >
+        <template slot-scope="scope">
+          <dict-tag  :options="dict.type.items_oper_type" :value="scope.row.itemsType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
@@ -96,14 +119,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['his:dept:upd']"
+            v-hasPermi="['system:post:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['his:dept:remove']"
+            v-hasPermi="['system:post:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -120,22 +143,16 @@
     <!-- 添加或修改岗位对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="科室名称" prop="deptName">
-          <el-input v-model="form.deptName" placeholder="请输入科室名称" />
+        <el-form-item label="岗位名称" prop="postName">
+          <el-input v-model="form.postName" placeholder="请输入岗位名称" />
         </el-form-item>
-        <el-form-item label="科室编码" prop="deptCode">
-          <el-input v-model="form.deptCode" placeholder="请输入科室编码" />
+        <el-form-item label="岗位编码" prop="postCode">
+          <el-input v-model="form.postCode" placeholder="请输入编码名称" />
         </el-form-item>
-        <el-form-item label="负责人" prop="deptLeader">
-        <el-input v-model="form.deptLeader" placeholder="请输入负责人" />
+        <el-form-item label="岗位顺序" prop="postSort">
+          <el-input-number v-model="form.postSort" controls-position="right" :min="0" />
         </el-form-item>
-        <el-form-item label="电话" prop="deptPhone">
-          <el-input v-model="form.deptPhone" placeholder="请输入负责人电话" />
-        </el-form-item>
-        <el-form-item label="挂号量" prop="deptQuantity">
-          <el-input-number v-model="form.deptQuantity" controls-position="right" :min="0" />
-        </el-form-item>
-        <el-form-item label="科室状态" prop="status">
+        <el-form-item label="岗位状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.sys_normal_disable"
@@ -157,11 +174,11 @@
 </template>
 
 <script>
-import { queryDept, getDept, delDept, addDept, updatePost } from "@/api/his/dept";
+import { listItems, getPost, delPost, addPost, updatePost } from "@/api/his/items";
 
 export default {
-  name: "Dept",
-  dicts: ['sys_normal_disable'],
+  name: "Items",
+  dicts: ['sys_normal_disable','items_oper_type'],
   data() {
     return {
       // 遮罩层
@@ -176,8 +193,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 科室表格数据
-      deptList: [],
+      // 项目费用表格数据
+      itemsList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -186,21 +203,23 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        deptName: undefined,
+        itemsGJZ: undefined,
+        itemsName: undefined,
+        itemsType: undefined,
         status: undefined
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        deptName: [
-          { required: true, message: "科室名称不能为空", trigger: "blur" }
+        postName: [
+          { required: true, message: "岗位名称不能为空", trigger: "blur" }
         ],
-        deptCode: [
-          { required: true, message: "科室编码不能为空", trigger: "blur" }
+        postCode: [
+          { required: true, message: "岗位编码不能为空", trigger: "blur" }
         ],
-        deptLeader: [
-          { required: true, message: "科室负责人不能为空", trigger: "blur" }
+        postSort: [
+          { required: true, message: "岗位顺序不能为空", trigger: "blur" }
         ]
       }
     };
@@ -209,11 +228,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询科室列表 */
+    /** 查询检查费用设置列表 */
     getList() {
       this.loading = true;
-      queryDept(this.queryParams).then(response => {
-        this.deptList = response.rows;
+      listItems(this.queryParams).then(response => {
+        this.itemsList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -226,12 +245,10 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        deptId: undefined,
-        deptCode: undefined,
-        deptName: undefined,
-        deptLeader: undefined,
-        deptPhone: undefined,
-        deptQuantity: 0,
+        postId: undefined,
+        postCode: undefined,
+        postName: undefined,
+        postSort: 0,
         status: "0",
         remark: undefined
       };
@@ -249,7 +266,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.deptId)
+      this.ids = selection.map(item => item.postId)
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -257,33 +274,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加科室";
+      this.title = "添加岗位";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const deptId = row.deptId || this.ids
-      console.log(this.ids)
-      getDept(deptId).then(response => {
+      const postId = row.postId || this.ids
+      getPost(postId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改科室";
+        this.title = "修改岗位";
       });
     },
     /** 提交按钮 */
     submitForm: function() {
-      //表单校验回显
       this.$refs["form"].validate(valid => {
-        //校验通过,提交表单
         if (valid) {
-          if (this.form.deptId != undefined) {
+          if (this.form.postId != undefined) {
             updatePost(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addDept(this.form).then(response => {
+            addPost(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -294,20 +308,21 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const deptIds = row.deptId || this.ids;
-      this.$modal.confirm('是否确认删除科室ID为"' + deptIds + '"的数据项？').then(function() {
-        return delDept(deptIds);
+      const postIds = row.postId || this.ids;
+      this.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
+        return delPost(postIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
-    // /** 导出按钮操作 */
-    // handleExport() {
-    //   this.download('system/post/export', {
-    //     ...this.queryParams
-    //   }, `post_${new Date().getTime()}.xlsx`)
-    // }
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('system/post/export', {
+        ...this.queryParams
+      }, `post_${new Date().getTime()}.xlsx`)
+    }
   }
 };
 </script>
+

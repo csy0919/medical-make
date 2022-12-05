@@ -31,7 +31,7 @@
                 dept_name like concat('%',#{deptName},'%')
             </if>
             <if test="status!=null and status!=''">
-                status=#{status}
+                and status=#{status}
             </if>
         </where>
     </select>

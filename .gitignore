@@ -15,7 +15,7 @@ Desktop.ini
 /.settings
 /.classpath
 /.project
-
+/.idea
 
 # ignore Maven generated target folders
 target
@@ -27,8 +27,43 @@ out
 .settings
 .factorypath
 .metadata
+.idea
+*.xml
 
+# ignore log files
+*.log
 
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# java class file
+*.class
+
+# Package Files #
+*.war
+*.ear
+/target
+/.settings
+/.classpath
+/.project
+/.idea
+
+# ignore Maven generated target folders
+target
+out
+
+# ignore eclipse files
+.project
+.classpath
+.settings
+.factorypath
+.metadata
+.idea
+*.iml
 
 # ignore log files
 *.log
