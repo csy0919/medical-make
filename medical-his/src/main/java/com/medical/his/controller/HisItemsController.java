@@ -6,10 +6,8 @@ import com.medical.common.core.controller.BaseController;
 import com.medical.common.core.domain.AjaxResult;
 import com.medical.common.core.page.TableDataInfo;
 import com.medical.common.enums.BusinessType;
-import com.medical.his.domain.HisDept;
 import com.medical.his.domain.HisItems;
 import com.medical.his.service.HisItemsService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +37,6 @@ public class HisItemsController extends BaseController {
     {
         startPage();
         List<HisItems> list = hisItemsService.selectHisItemsList(hisItems);
-        System.out.println();
         return getDataTable(list);
     }
 

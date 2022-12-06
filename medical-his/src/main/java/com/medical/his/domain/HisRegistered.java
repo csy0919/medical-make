@@ -19,4 +19,7 @@ public class HisRegistered extends BaseEntity {
 
     /**挂号费*/
     private String registeredCost;
+
+    /**状态*/
+    private String status;
 }

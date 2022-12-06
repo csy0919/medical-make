@@ -1,31 +1,13 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="项目名称" prop="itemsName">
+      <el-form-item label="挂号费名称" prop="registeredName" label-width="82px">
         <el-input
-          v-model="queryParams.itemsName"
-          placeholder="请输入项目名称"
+          v-model="queryParams.registeredName"
+          placeholder="请输入挂号费名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="关键字" prop="itemsGJZ">
-        <el-input
-          v-model="queryParams.itemsGJZ"
-          placeholder="请输入关键字"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="项目类型" prop="itemsType">
-        <el-select v-model="queryParams.itemsType" placeholder="项目类型" clearable>
-          <el-option
-            v-for="dict in dict.type.items_oper_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="可用状态" clearable>
@@ -51,7 +33,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['his:items:add']"
+          v-hasPermi="['his:registered:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -62,7 +44,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['his:items:edit']"
+          v-hasPermi="['his:registered:upd']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -73,35 +55,27 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['his:items:remove']"
+          v-hasPermi="['his:registered:remove']"
         >删除</el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['system:post:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          plain-->
+      <!--          icon="el-icon-download"-->
+      <!--          size="mini"-->
+      <!--          @click="handleExport"-->
+      <!--          v-hasPermi="['system:post:export']"-->
+      <!--        >导出</el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="itemsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="registeredList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="项目费用ID" align="center" prop="itemsId" />
-      <el-table-column label="项目名称" align="center" prop="itemsName" />
-      <el-table-column label="关键字" align="center" prop="itemsGJZ" />
-      <el-table-column label="项目单价" align="center" prop="itemsPrice" />
-      <el-table-column label="项目成本" align="center" prop="itemsCost" />
-      <el-table-column label="单位" align="center" prop="itemsUnit" />
-      <el-table-column label="类别" align="center" prop="itemsType" >
-        <template slot-scope="scope">
-          <dict-tag  :options="dict.type.items_oper_type" :value="scope.row.itemsType"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="挂号费ID" align="center" prop="registeredId" />
+      <el-table-column label="挂号费名称" align="center" prop="registeredName" />
+      <el-table-column label="挂号费" align="center" prop="registeredCost" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
@@ -119,14 +93,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['his:items:upd']"
+            v-hasPermi="['his:registered:upd']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['his:items:remove']"
+            v-hasPermi="['his:registered:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -140,33 +114,14 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改项目对话框 -->
+    <!-- 添加或修改岗位对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="项目类型" prop="itemsType">
-          <el-select v-model="form.itemsType">
-            <el-option
-              v-for="dict in dict.type.items_oper_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            />
-          </el-select>
+      <el-form ref="form" :model="form" :rules="rules" label-width="92px">
+        <el-form-item label="挂号费名称" prop="registeredName">
+          <el-input v-model="form.registeredName" placeholder="请输入挂号费名称" />
         </el-form-item>
-        <el-form-item label="项目名称" prop="itemsName">
-          <el-input v-model="form.itemsName" placeholder="请输入项目名称" />
-        </el-form-item>
-        <el-form-item label="关键字" prop="itemsGJZ">
-          <el-input v-model="form.itemsGJZ" placeholder="请输入项目关键字" />
-        </el-form-item>
-        <el-form-item label="项目价格" prop="itemsPrice">
-          <el-input v-model="form.itemsPrice" placeholder="请输入项目价格"/>
-        </el-form-item>
-        <el-form-item label="项目成本" prop="itemsCost">
-          <el-input v-model="form.itemsCost" placeholder="请输入项目成本"/>
-        </el-form-item>
-        <el-form-item label="项目单位" prop="itemsUnit">
-          <el-input v-model="form.itemsUnit" placeholder="请输入项目单位" />
+        <el-form-item label="金额" prop="registeredCost">
+          <el-input v-model="form.registeredCost"  placeholder="0.00"  />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
@@ -176,9 +131,6 @@
               :label="dict.value"
             >{{dict.label}}</el-radio>
           </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -190,11 +142,11 @@
 </template>
 
 <script>
-import { listItems, getItems, delItems, addItems, updateItems } from "@/api/his/items";
+import { listRegistered, getRegistered, delRegistered, addRegistered, updateRegistered } from "@/api/his/registered";
 
 export default {
-  name: "Items",
-  dicts: ['sys_normal_disable','items_oper_type'],
+  name: "registered",
+  dicts: ['sys_normal_disable'],
   data() {
     return {
       // 遮罩层
@@ -209,8 +161,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 项目费用表格数据
-      itemsList: [],
+      // 挂号费表格数据
+      registeredList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -219,31 +171,16 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        itemsGJZ: undefined,
-        itemsName: undefined,
-        itemsType: undefined,
+        registeredName: undefined,
         status: undefined
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        itemsPrice:[
-          { required: true, message: "项目价格不能为空", trigger: "blur"}
+        registeredName: [
+          { required: true, message: "挂号费名称不能为空", trigger: "blur" }
         ],
-        itemsCost:[
-          { required: true, message: "项目成本不能为空", trigger: "blur"}
-        ],
-        itemsName: [
-          { required: true, message: "项目名称不能为空", trigger: "blur" }
-        ],
-        itemsType: [
-          { required: true, message: "项目类型不能为空", trigger: "blur" }
-        ],
-        itemsGJZ: [
-          { required: true, message: "项目关键字不能为空", trigger: "blur" }
-        ],
-
       }
     };
   },
@@ -251,11 +188,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询检查费用设置列表 */
+    /** 查询科室列表 */
     getList() {
       this.loading = true;
-      listItems(this.queryParams).then(response => {
-        this.itemsList = response.rows;
+      listRegistered(this.queryParams).then(response => {
+        this.registeredList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -268,11 +205,8 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        itemsPrice:undefined,
-        itemsCost:undefined,
-        itemsType: undefined,
-        itemsName: undefined,
-        itemsGJZ: undefined,
+        registeredId: undefined,
+        registeredName: undefined,
         status: "0",
         remark: undefined
       };
@@ -290,7 +224,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.itemsId)
+      this.ids = selection.map(item => item.registeredId)
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -298,30 +232,32 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加检查项目";
+      this.title = "添加挂号费信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const itemsId = row.itemsId || this.ids
-      getItems(itemsId).then(response => {
+      const registeredId = row.registeredId || this.ids
+      getRegistered(registeredId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改检查项目";
+        this.title = "修改挂号费信息";
       });
     },
     /** 提交按钮 */
     submitForm: function() {
+      //表单校验回显
       this.$refs["form"].validate(valid => {
+        //校验通过,提交表单
         if (valid) {
-          if (this.form.itemsId !== undefined) {
-            updateItems(this.form).then(response => {
+          if (this.form.registeredId != undefined) {
+            updateRegistered(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addItems(this.form).then(response => {
+            addRegistered(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -332,21 +268,20 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const itemsIds = row.itemsId || this.ids;
-      this.$modal.confirm('是否确认删除项目费用ID为"' + itemsIds + '"的数据项？').then(function() {
-        return delItems(itemsIds);
+      const registeredIds = row.registeredId || this.ids;
+      this.$modal.confirm('是否确认删除挂号费ID为"' + registeredIds + '"的数据项？').then(function() {
+        return delRegistered(registeredIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
-    /** 导出按钮操作 */
-  //   handleExport() {
-  //     this.download('system/post/export', {
-  //       ...this.queryParams
-  //     }, `post_${new Date().getTime()}.xlsx`)
-  //   }
+    // /** 导出按钮操作 */
+    // handleExport() {
+    //   this.download('system/post/export', {
+    //     ...this.queryParams
+    //   }, `post_${new Date().getTime()}.xlsx`)
+    // }
   }
 };
 </script>
-
