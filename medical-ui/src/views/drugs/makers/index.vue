@@ -1,31 +1,29 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="项目名称" prop="itemsName">
+      <el-form-item label="厂家名称" prop="makersName">
         <el-input
-          v-model="queryParams.itemsName"
-          placeholder="请输入项目名称"
+          v-model="queryParams.makersName"
+          placeholder="请输入厂家名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="关键字" prop="itemsGJZ">
+      <el-form-item label="关键字" prop="makersGJZ">
         <el-input
-          v-model="queryParams.itemsGJZ"
+          v-model="queryParams.makersGJZ"
           placeholder="请输入关键字"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="项目类型" prop="itemsType">
-        <el-select v-model="queryParams.itemsType" placeholder="项目类型" clearable>
-          <el-option
-            v-for="dict in dict.type.items_oper_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+      <el-form-item label="厂家电话" prop="makersPhone">
+        <el-input
+          v-model="queryParams.makersPhone"
+          placeholder="请输入厂家电话"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="可用状态" clearable>
@@ -36,6 +34,14 @@
             :value="dict.value"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item label="创建时间" prop="createTime">
+        <el-date-picker
+          v-model="queryParams.createTime"
+          placeholder="请选择日期"
+          clearable
+          :size="small"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -76,32 +82,27 @@
           v-hasPermi="['his:items:remove']"
         >删除</el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['system:post:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          plain-->
+      <!--          icon="el-icon-download"-->
+      <!--          size="mini"-->
+      <!--          @click="handleExport"-->
+      <!--          v-hasPermi="['system:post:export']"-->
+      <!--        >导出</el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="itemsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="makersList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="项目费用ID" align="center" prop="itemsId" />
-      <el-table-column label="项目名称" align="center" prop="itemsName" />
-      <el-table-column label="关键字" align="center" prop="itemsGJZ" />
-      <el-table-column label="项目单价" align="center" prop="itemsPrice" />
-      <el-table-column label="项目成本" align="center" prop="itemsCost" />
-      <el-table-column label="单位" align="center" prop="itemsUnit" />
-      <el-table-column label="类别" align="center" prop="itemsType" >
-        <template slot-scope="scope">
-          <dict-tag  :options="dict.type.items_oper_type" :value="scope.row.itemsType"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="厂家ID" align="center" prop="makersId" />
+      <el-table-column label="厂家名称" align="center" prop="makersName" />
+      <el-table-column label="厂家编码" align="center" prop="makersCode" />
+      <el-table-column label="联系人" align="center" prop="makersLeader" />
+      <el-table-column label="电话" align="center" prop="makersPhone" />
+      <el-table-column label="关键字" align="center" prop="makersGJZ" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
@@ -190,11 +191,11 @@
 </template>
 
 <script>
-import { listItems, getItems, delItems, addItems, updateItems } from "@/api/his/items";
+import { queryMakers, getMakers, delMakers, addMakers, updateMakers } from "@/api/drugs/makers";
 
 export default {
-  name: "Items",
-  dicts: ['sys_normal_disable','items_oper_type'],
+  name: "Makers",
+  dicts: ['sys_normal_disable'],
   data() {
     return {
       // 遮罩层
@@ -209,8 +210,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 项目费用表格数据
-      itemsList: [],
+      // 厂家表格数据
+      makersList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -219,10 +220,11 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        itemsGJZ: undefined,
-        itemsName: undefined,
-        itemsType: undefined,
-        status: undefined
+        makersGJZ: undefined,
+        makersName: undefined,
+        makersPhone: undefined,
+        status: undefined,
+        createTime:undefined,
       },
       // 表单参数
       form: {},
@@ -254,8 +256,8 @@ export default {
     /** 查询检查费用设置列表 */
     getList() {
       this.loading = true;
-      listItems(this.queryParams).then(response => {
-        this.itemsList = response.rows;
+      queryMakers(this.queryParams).then(response => {
+        this.makersList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -268,11 +270,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        itemsPrice:undefined,
-        itemsCost:undefined,
-        itemsType: undefined,
-        itemsName: undefined,
-        itemsGJZ: undefined,
+        makersPhone:undefined,
+        makersLeader:undefined,
+        makersCode: undefined,
+        makersName: undefined,
+        makersGJZ: undefined,
         status: "0",
         remark: undefined
       };
@@ -290,7 +292,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.itemsId)
+      this.ids = selection.map(item => item.makersId)
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -303,8 +305,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const itemsId = row.itemsId || this.ids
-      getItems(itemsId).then(response => {
+      const makersId = row.makersId || this.ids
+      getMakers(makersId).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改检查项目";
@@ -314,14 +316,14 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.itemsId !== undefined) {
-            updateItems(this.form).then(response => {
+          if (this.form.makersId !== undefined) {
+            updateMakers(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addItems(this.form).then(response => {
+            addMakers(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -332,20 +334,20 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const itemsIds = row.itemsId || this.ids;
-      this.$modal.confirm('是否确认删除项目费用ID为"' + itemsIds + '"的数据项？').then(function() {
-        return delItems(itemsIds);
+      const makersIds = row.makersId || this.ids;
+      this.$modal.confirm('是否确认删除项目费用ID为"' + makersIds + '"的数据项？').then(function() {
+        return delMakers(makersIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
     /** 导出按钮操作 */
-  //   handleExport() {
-  //     this.download('system/post/export', {
-  //       ...this.queryParams
-  //     }, `post_${new Date().getTime()}.xlsx`)
-  //   }
+    //   handleExport() {
+    //     this.download('system/post/export', {
+    //       ...this.queryParams
+    //     }, `post_${new Date().getTime()}.xlsx`)
+    //   }
   }
 };
 </script>

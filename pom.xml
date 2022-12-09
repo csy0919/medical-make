@@ -182,6 +182,13 @@
                 <version>${medical.version}</version>
             </dependency>
 
+            <!-- 药品进销存管理模块-->
+            <dependency>
+                <groupId>com.medical</groupId>
+                <artifactId>medical-drugs</artifactId>
+                <version>${medical.version}</version>
+            </dependency>
+
 
             <!-- 通用工具-->
             <dependency>
@@ -201,6 +208,7 @@
         <module>medical-generator</module>
         <module>medical-common</module>
         <module>medical-his</module>
+        <module>medical-drugs</module>
 
 
     </modules>

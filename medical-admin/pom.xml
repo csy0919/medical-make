@@ -64,6 +64,10 @@
             <groupId>com.medical</groupId>
             <artifactId>medical-his</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.medical</groupId>
+            <artifactId>medical-drugs</artifactId>
+        </dependency>
 
     </dependencies>
 
