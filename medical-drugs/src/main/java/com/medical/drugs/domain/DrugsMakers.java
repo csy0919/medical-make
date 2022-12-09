@@ -3,6 +3,8 @@ package com.medical.drugs.domain;
 import com.medical.common.core.domain.BaseEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Csy
  * @date 2022/12/9 11:39
@@ -31,6 +33,8 @@ public class DrugsMakers extends BaseEntity {
 
     /** 状态 */
     private String status;
+
+
 
 
 

@@ -39,8 +39,9 @@
         <el-date-picker
           v-model="queryParams.createTime"
           placeholder="请选择日期"
+          value-format="yyyy-MM-dd"
           clearable
-          :size="small"
+          size="small"
         />
       </el-form-item>
       <el-form-item>
@@ -256,6 +257,7 @@ export default {
     /** 查询检查费用设置列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams)
       queryMakers(this.queryParams).then(response => {
         this.makersList = response.rows;
         this.total = response.total;

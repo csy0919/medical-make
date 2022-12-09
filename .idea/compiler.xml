@@ -7,21 +7,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ruoyi-system" />
+
         <module name="medical-quartz" />
-        <module name="ruoyi-generator" />
-        <module name="ruoyi-his" />
-        <module name="ruoyi-framework" />
         <module name="medical-generator" />
         <module name="medical-his" />
         <module name="medical-system" />
         <module name="medical-drugs" />
-        <module name="ruoyi-common" />
         <module name="medical-framework" />
         <module name="medical-common" />
-        <module name="ruoyi-quartz" />
         <module name="medical-admin" />
-        <module name="ruoyi-admin" />
+
       </profile>
     </annotationProcessing>
   </component>
