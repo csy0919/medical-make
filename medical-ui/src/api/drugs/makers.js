@@ -8,36 +8,36 @@ export function queryMakers(params) {
     params: params
   })
 }
-// 查询科室详细
-export function getMakers(deptId) {
+// 根据ID查询厂家详细
+export function getMakers(makersId) {
   return request({
-    url: '/his/dept/' + deptId,
+    url: '/drugs/makers/' + makersId,
     method: 'get'
   })
 }
 
-// 新增科室
+// 新增厂家信息
 export function addMakers(data) {
   return request({
-    url: '/his/dept',
+    url: '/drugs/makers',
     method: 'post',
     data: data
   })
 }
 
-// 修改科室
+// 修改厂家信息
 export function updateMakers(data) {
   return request({
-    url: '/his/dept',
+    url: '/drugs/makers',
     method: 'put',
     data: data
   })
 }
 
-// 删除科室
-export function delMakers(postId) {
+// 删除厂家信息
+export function delMakers(makersId) {
   return request({
-    url: '/his/dept/' + postId,
+    url: '/drugs/makers/' + makersId,
     method: 'delete'
   })
 }

@@ -3,7 +3,6 @@ package com.medical.drugs.domain;
 import com.medical.common.core.domain.BaseEntity;
 import lombok.Data;
 
-import java.util.Date;
 
 /**
  * @author Csy
@@ -27,6 +26,9 @@ public class DrugsMakers extends BaseEntity {
 
     /** 电话 */
     private String makersPhone;
+
+    /** 地址 */
+    private String makersAddress;
 
     /** 关键字 */
     private String makersGJZ;

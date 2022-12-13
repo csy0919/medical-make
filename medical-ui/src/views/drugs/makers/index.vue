@@ -103,6 +103,7 @@
       <el-table-column label="厂家编码" align="center" prop="makersCode" />
       <el-table-column label="联系人" align="center" prop="makersLeader" />
       <el-table-column label="电话" align="center" prop="makersPhone" />
+      <el-table-column label="地址" align="center" prop="makersAddress" />
       <el-table-column label="关键字" align="center" prop="makersGJZ" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
@@ -145,30 +146,23 @@
     <!-- 添加或修改项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="项目类型" prop="itemsType">
-          <el-select v-model="form.itemsType">
-            <el-option
-              v-for="dict in dict.type.items_oper_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            />
-          </el-select>
+        <el-form-item label="厂家名称" prop="makersName">
+          <el-input v-model="form.makersName" placeholder="请输入厂家名称" />
         </el-form-item>
-        <el-form-item label="项目名称" prop="itemsName">
-          <el-input v-model="form.itemsName" placeholder="请输入项目名称" />
+        <el-form-item label="厂家编码" prop="makersCode">
+          <el-input v-model="form.makersCode" placeholder="请输入厂家关键字" />
         </el-form-item>
-        <el-form-item label="关键字" prop="itemsGJZ">
-          <el-input v-model="form.itemsGJZ" placeholder="请输入项目关键字" />
+        <el-form-item label="联系人" prop="makersLeader">
+          <el-input v-model="form.makersLeader" placeholder="请输入厂家联系人"/>
         </el-form-item>
-        <el-form-item label="项目价格" prop="itemsPrice">
-          <el-input v-model="form.itemsPrice" placeholder="请输入项目价格"/>
+        <el-form-item label="电话" prop="makersPhone">
+          <el-input v-model="form.makersPhone" placeholder="请输入联系电话"/>
         </el-form-item>
-        <el-form-item label="项目成本" prop="itemsCost">
-          <el-input v-model="form.itemsCost" placeholder="请输入项目成本"/>
+        <el-form-item label="关键字" prop="makersGJZ">
+          <el-input v-model="form.makersGJZ" placeholder="请输入厂家关键字" />
         </el-form-item>
-        <el-form-item label="项目单位" prop="itemsUnit">
-          <el-input v-model="form.itemsUnit" placeholder="请输入项目单位" />
+        <el-form-item label="地址" prop="makersAddress">
+          <el-input v-model="form.makersAddress" placeholder="请输入厂家地址" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
@@ -231,20 +225,17 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        itemsPrice:[
-          { required: true, message: "项目价格不能为空", trigger: "blur"}
+        makersAddress:[
+          { required: true, message: "厂家地址不能为空", trigger: "blur"}
         ],
-        itemsCost:[
-          { required: true, message: "项目成本不能为空", trigger: "blur"}
+        makersName:[
+          { required: true, message: "厂家名称不能为空", trigger: "blur"}
         ],
-        itemsName: [
-          { required: true, message: "项目名称不能为空", trigger: "blur" }
+        makersPhone: [
+          { required: true, message: "电话不能为空", trigger: "blur" }
         ],
-        itemsType: [
-          { required: true, message: "项目类型不能为空", trigger: "blur" }
-        ],
-        itemsGJZ: [
-          { required: true, message: "项目关键字不能为空", trigger: "blur" }
+        makersGJZ: [
+          { required: true, message: "厂家关键字不能为空", trigger: "blur" }
         ],
 
       }
@@ -273,6 +264,7 @@ export default {
     reset() {
       this.form = {
         makersPhone:undefined,
+        makersAddress:undefined,
         makersLeader:undefined,
         makersCode: undefined,
         makersName: undefined,
@@ -302,7 +294,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加检查项目";
+      this.title = "添加厂家信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -311,7 +303,7 @@ export default {
       getMakers(makersId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改检查项目";
+        this.title = "修改厂家信息";
       });
     },
     /** 提交按钮 */
@@ -337,7 +329,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const makersIds = row.makersId || this.ids;
-      this.$modal.confirm('是否确认删除项目费用ID为"' + makersIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除厂家ID为"' + makersIds + '"的数据项？').then(function() {
         return delMakers(makersIds);
       }).then(() => {
         this.getList();
@@ -353,4 +345,11 @@ export default {
   }
 };
 </script>
+
+<style>
+  .el-dialog__title{
+    display: flex;
+    justify-content: center;
+  }
+</style>
 
