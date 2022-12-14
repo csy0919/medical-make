@@ -1,8 +1,11 @@
 package com.medical.drugs.controller;
 
+import com.medical.common.annotation.Log;
 import com.medical.common.core.controller.BaseController;
 import com.medical.common.core.domain.AjaxResult;
 import com.medical.common.core.page.TableDataInfo;
+import com.medical.common.core.text.Convert;
+import com.medical.common.enums.BusinessType;
 import com.medical.drugs.domain.DrugsInfo;
 import com.medical.drugs.domain.DrugsMakers;
 import com.medical.drugs.domain.Makers;
@@ -76,6 +79,35 @@ public class DrugsInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('drugs:drug:remove')")
     @DeleteMapping("/{drugIds}")
     public AjaxResult delDrug(@PathVariable Long[] drugIds){
+        List<DrugsInfo> list =drugsInfoService.selectDrugs(drugIds);
+        for (DrugsInfo drugsInfo:list) {
+            drugsInfo.setCreateBy(getUsername());
+            drugsInfoService.addDrugsDel(drugsInfo);
+        }
         return toAjax(drugsInfoService.delDrug(drugIds));
     }
+
+    @PreAuthorize("@ss.hasPermi('drugs:drug:import')")
+    @GetMapping("/del/list")
+    public TableDataInfo selectDrugsDelList(DrugsInfo drugsInfo){
+        startPage();
+        List<DrugsInfo> list = drugsInfoService.selectDrugsDelList(drugsInfo);
+        return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('drugs:drug:import')")
+    @PostMapping("/importDrug")
+    public AjaxResult importDrug(Long[] drugIds)
+    {
+        List<DrugsInfo> list = drugsInfoService.selectDrugsDelById(drugIds);
+        for (DrugsInfo drugsInfo:list) {
+            drugsInfo.setCreateBy(getUsername());
+            drugsInfoService.addDrugId(drugsInfo);
+        }
+        drugsInfoService.delDrugDel(drugIds);
+        return success();
+    }
+
+
+
 }

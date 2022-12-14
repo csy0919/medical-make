@@ -2,6 +2,7 @@ package com.medical.drugs.mapper;
 
 import com.medical.drugs.domain.DrugsInfo;
 import com.medical.drugs.domain.Makers;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -46,4 +47,45 @@ public interface DrugsInfoMapper {
      * @return
      */
     int delDrug(Long[] drugIds);
+
+    /**
+     * 根据要删除ID查询删除药品详细信息
+     * @param drugIds
+     * @return
+     */
+    List<DrugsInfo> selectDrugs(Long[] drugIds);
+
+    /**
+     * 药品删除表新增删除药品的详细信息
+     * @param drugsInfo
+     * @return
+     */
+    int addDrugsDel(DrugsInfo drugsInfo);
+
+    /**
+     * 查询删除药品信息列表
+     * @param drugsInfo
+     * @return
+     */
+    List<DrugsInfo> selectDrugsDelList(DrugsInfo drugsInfo);
+
+    /**
+     * 从药品删除表中导入药品信息信息
+     * @param drugsInfo
+     * @return
+     */
+    int addDrugId(DrugsInfo drugsInfo);
+
+    /**
+     * 通过Id查询删除的药品信息
+     * @param drugIds
+     * @return
+     */
+    List<DrugsInfo> selectDrugsDelById(Long[] drugIds);
+
+    /**
+     * 从药品删除表中删除药品信息
+     * @param drugIds
+     */
+    void delDrugDel(Long[] drugIds);
 }

@@ -1,19 +1,19 @@
 <template>
-  <!-- 导入表 -->
-  <el-dialog title="导入表" :visible.sync="visible" width="800px" top="5vh" append-to-body>
+  <!-- 导入已删除药品 -->
+  <el-dialog title="导入已删除药品" :visible.sync="visible" width="800px" top="5vh" append-to-body>
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true">
-      <el-form-item label="表名称" prop="tableName">
+      <el-form-item label="药品名称" prop="drugName">
         <el-input
-          v-model="queryParams.tableName"
-          placeholder="请输入表名称"
+          v-model="queryParams.drugName"
+          placeholder="请输入药品名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="表描述" prop="tableComment">
+      <el-form-item label="药品编码" prop="drugCode">
         <el-input
-          v-model="queryParams.tableComment"
-          placeholder="请输入表描述"
+          v-model="queryParams.drugCode"
+          placeholder="请输入药品编码"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -24,12 +24,25 @@
       </el-form-item>
     </el-form>
     <el-row>
-      <el-table @row-click="clickRow" ref="table" :data="dbTableList" @selection-change="handleSelectionChange" height="260px">
+      <el-table @row-click="clickRow" ref="table" :data="drugDelList" @selection-change="handleSelectionChange" height="260px">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="tableComment" label="表描述" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateTime" label="更新时间"></el-table-column>
+        <el-table-column prop="drugId" label="药品id" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="drugName" label="药品名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="drugCode" label="药品编码" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="makersId" label="生产厂家" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <template v-for="(item, index) in makersList" >
+              <template v-if="scope.row.makersId == item.makersId">
+            <span
+              :key="item.makersId"
+              :index="index"
+            >{{ item.makersName }}</span>
+              </template>
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="删除时间"></el-table-column>
+        <el-table-column prop="createBy" label="删除人"></el-table-column>
       </el-table>
       <pagination
         v-show="total>0"
@@ -47,46 +60,50 @@
 </template>
 
 <script>
-import { listDbTable, importTable } from "@/api/drugs/removeDrug";
+import { listDelDrug, importDrug } from "@/api/drugs/removeDrug";
 export default {
   data() {
     return {
       // 遮罩层
       visible: false,
+      //厂家数组
+      makersList:[],
       // 选中数组值
-      tables: [],
+      drugIds: [],
       // 总条数
       total: 0,
-      // 表数据
-      dbTableList: [],
+      // 药品数据
+      drugDelList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        tableName: undefined,
-        tableComment: undefined
+        drugName: undefined,
+        drugCode: undefined
       }
     };
   },
   methods: {
     // 显示弹框
-    show() {
+    show(data) {
+      this.makersList=data;
       this.visible = true;
       this.getList();
-      
+
     },
     clickRow(row) {
       this.$refs.table.toggleRowSelection(row);
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.tables = selection.map(item => item.tableName);
+      this.drugIds = selection.map(item => item.drugId);
+
     },
     // 查询表数据
     getList() {
-      listDbTable(this.queryParams).then(res => {
+      listDelDrug(this.queryParams).then(res => {
         if (res.code === 200) {
-          this.dbTableList = res.rows;
+          this.drugDelList = res.rows;
           this.total = res.total;
         }
       });
@@ -98,21 +115,23 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      console.log(this.drugIds)
       this.resetForm("queryForm");
       this.handleQuery();
     },
     /** 导入按钮操作 */
     handleImportTable() {
-      const tableNames = this.tables.join(",");
-      if (tableNames == "") {
-        this.$modal.msgError("请选择要导入的表");
+      const drugsIds = this.drugIds.join(",");
+      console.log(drugsIds)
+      if (drugsIds == "") {
+        this.$modal.msgError("请选择要导入的药品");
         return;
       }
-      importTable({ tables: tableNames }).then(res => {
+      importDrug({drugIds:drugsIds}).then(res => {
         this.$modal.msgSuccess(res.msg);
         if (res.code === 200) {
           this.visible = false;
-          this.$emit("ok");
+          this.$parent.getList();
         }
       });
     }

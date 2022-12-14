@@ -42,7 +42,7 @@ public interface DrugsMakersMapper {
     int updateMakers(DrugsMakers drugsMakers);
 
     /**
-     * 批量删除厂家信息
+     * 批量删除厂家信息并加入
      * @param makersIds
      * @return
      */

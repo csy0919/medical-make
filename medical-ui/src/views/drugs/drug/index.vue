@@ -264,6 +264,8 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 唯一标识符
+      uniqueId: "",
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -304,6 +306,7 @@ export default {
   created() {
     this.getList();
   },
+
   methods: {
     /** 查询检查费用设置列表 */
     getList() {
@@ -404,7 +407,7 @@ export default {
     },
     /** 导入删除药品按钮操作 */
     openImportTable() {
-      this.$refs.import.show();
+      this.$refs.import.show(this.makersList);
     }
   }
 };

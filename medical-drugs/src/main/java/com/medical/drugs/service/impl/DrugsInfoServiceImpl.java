@@ -1,7 +1,6 @@
 package com.medical.drugs.service.impl;
 
 import com.medical.drugs.domain.DrugsInfo;
-import com.medical.drugs.domain.Makers;
 import com.medical.drugs.mapper.DrugsInfoMapper;
 import com.medical.drugs.service.DrugsInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,36 @@ public class DrugsInfoServiceImpl implements DrugsInfoService {
     @Override
     public int delDrug(Long[] drugIds) {
         return drugsInfoMapper.delDrug(drugIds);
+    }
+
+    @Override
+    public List<DrugsInfo> selectDrugs(Long[] drugIds) {
+        return drugsInfoMapper.selectDrugs(drugIds);
+    }
+
+    @Override
+    public void addDrugsDel(DrugsInfo drugsInfo) {
+        drugsInfoMapper.addDrugsDel(drugsInfo);
+    }
+
+    @Override
+    public List<DrugsInfo> selectDrugsDelList(DrugsInfo drugsInfo) {
+        return drugsInfoMapper.selectDrugsDelList(drugsInfo);
+    }
+
+    @Override
+    public void addDrugId(DrugsInfo drugsInfo) {
+         drugsInfoMapper.addDrugId(drugsInfo);
+    }
+
+    @Override
+    public List<DrugsInfo> selectDrugsDelById(Long[] drugIds) {
+        return drugsInfoMapper.selectDrugsDelById(drugIds);
+    }
+
+    @Override
+    public void delDrugDel(Long[] drugIds) {
+        drugsInfoMapper.delDrugDel(drugIds);
     }
 
 }

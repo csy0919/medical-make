@@ -46,4 +46,46 @@ public interface DrugsInfoService {
      */
     int delDrug(Long[] drugIds);
 
+    /**
+     * 根据要删除ID查询删除药品详细信息
+     * @param drugIds
+     * @return
+     */
+    List<DrugsInfo> selectDrugs(Long[] drugIds);
+
+    /**
+     * 药品删除表新增删除药品的详细信息
+     * @param drugsInfo
+     * @return
+     */
+    void addDrugsDel(DrugsInfo drugsInfo);
+
+
+    /**
+     * 查询删除药品信息列表
+     * @param drugsInfo
+     * @return
+     */
+    List<DrugsInfo> selectDrugsDelList(DrugsInfo drugsInfo);
+
+    /**
+     * 从药品删除表中导入药品信息信息
+     * @param drugsInfo
+     * @return
+     */
+    void addDrugId(DrugsInfo drugsInfo);
+
+    /**
+     * 通过Id查询删除的药品信息
+     * @param drugIds
+     * @return
+     */
+    List<DrugsInfo> selectDrugsDelById(Long[] drugIds);
+
+    /**
+     * 从药品删除表中删除药品信息
+     * @param drugIds
+     */
+    void delDrugDel(Long[] drugIds);
+
 }
