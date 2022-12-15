@@ -177,7 +177,7 @@
     />
 
     <!-- 添加或修改项目对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="药品名称" prop="drugName">
           <el-input v-model="form.drugName" placeholder="请输入药品名称" />
