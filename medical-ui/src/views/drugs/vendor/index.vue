@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="供应商名称" prop="makersName" label-width="82px">
+      <el-form-item label="供应商名称" prop="vendorName" label-width="82px">
         <el-input
           v-model="queryParams.vendorName"
           placeholder="请输入供应商名称"
@@ -9,7 +9,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系人" prop="makersGJZ">
+      <el-form-item label="联系人" prop="vendorLeader">
         <el-input
           v-model="queryParams.vendorLeader"
           placeholder="请输入联系人"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="供应商电话" prop="makersPhone" label-width="82px">
+      <el-form-item label="供应商电话" prop="vendorLandline" label-width="82px">
         <el-input
           v-model="queryParams.vendorLandline"
           placeholder="请输入供应商电话"
@@ -231,7 +231,6 @@ export default {
     /** 查询检查费用设置列表 */
     getList() {
       this.loading = true;
-      console.log(this.queryParams)
       queryVendors(this.queryParams).then(response => {
         this.vendorList = response.rows;
         this.total = response.total;

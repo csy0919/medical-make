@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
 
 /* Layout */
@@ -161,7 +160,36 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  {
+    path: '/drugs/purchase-update',
+    component: Layout,
+    hidden: true,
+    permissions: ['drugs:purchase:list'],
+    children: [
+      {
+        path: '/drugs/purchase/update',
+        component: () => import('@/views/drugs/purchase/update'),
+        name: 'Update',
+        meta: { title: '采购入库修改', activeMenu: '/drugs/purchase' }
+      // /:purchaseId(\d+)
+      }
+    ]
+  },
+  {
+    path:'/drugs/purchase-date',
+    component: Layout,
+    permissions: ['drugs:purchase:add'],
+    hidden: true,
+    children: [
+      {
+        path: '/drugs/purchase/date',
+        component: () => import('@/views/drugs/purchase/date'),
+        name:"Date",
+        meta: { title: '采购入库', activeMenu: '/drugs/purchase' }
+      }
+    ]
+  },
 ]
 
 // 防止连续点击多次路由报错

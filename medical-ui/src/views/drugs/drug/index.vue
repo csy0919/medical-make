@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="药品名称" prop="drugName">
+      <el-form-item label="药品名称" prop="drugName"  >
         <el-input
           v-model="queryParams.drugName"
           placeholder="请输入药品名称"
@@ -18,7 +18,7 @@
         />
       </el-form-item>
       <el-form-item label="药品类型" prop="drugType">
-        <el-select v-model="queryParams.drugType" placeholder="药品类型" clearable>
+        <el-select v-model="queryParams.drugType" placeholder="药品类型" clearable width="120px">
           <el-option
             v-for="dict in dict.type.drug_drug_type"
             :key="dict.value"
@@ -47,7 +47,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item label="状态" prop="status" label-width="!important">
         <el-select v-model="queryParams.status" placeholder="可用状态" clearable>
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
@@ -311,7 +311,7 @@ export default {
     /** 查询检查费用设置列表 */
     getList() {
       this.loading = true;
-      queryMakers(this.queryParams).then(res => {
+      queryMakers().then(res => {
         this.makersList = res.rows;
       })
       queryDrug(this.queryParams).then(response => {

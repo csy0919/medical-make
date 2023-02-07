@@ -46,5 +46,10 @@ public interface DrugsMakersService {
      */
     int removeMakers(Long[] makersIds);
 
+    /**
+     * 查询厂家信息(ID,名称)
+     * @param drugsMakers
+     * @return
+     */
     List<Makers> queryMakers(DrugsMakers drugsMakers);
 }
